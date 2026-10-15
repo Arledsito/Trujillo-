@@ -1,0 +1,7 @@
+{
+  "name": "Galeria",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
