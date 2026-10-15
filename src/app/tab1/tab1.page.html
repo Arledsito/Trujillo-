@@ -6,24 +6,57 @@
 
 <ion-content [fullscreen]="true">
   <main class="camera-page">
-    <video
-      #cameraPreview
-      class="camera-preview"
-      [hidden]="!isBrowserCameraOpen"
-      autoplay
-      playsinline
-      muted
-      aria-label="Vista previa de la cámara"
-    ></video>
-    <div class="camera-art" [hidden]="isBrowserCameraOpen" aria-hidden="true">
-      <ion-icon name="camera-outline"></ion-icon>
-    </div>
     @if (!isBrowserCameraOpen) {
       <p class="eyebrow">CAPTURA EL MOMENTO</p>
-      <h1>Tu cámara</h1>
+      <h1>Prueba un sofá en tu espacio</h1>
       <p class="description">
-        Toma una foto y la guardaremos en esta galería. En dispositivos móviles
-        también aparecerá en las fotos de tu dispositivo.
+        Coloca el sofá en tu habitación con realidad aumentada. También puedes
+        tomar fotos; en móviles se guardarán en esta galería y en tu dispositivo.
+      </p>
+    }
+    <div
+      class="camera-stage"
+      [class.camera-stage--live]="isBrowserCameraOpen"
+    >
+      <video
+        #cameraPreview
+        class="camera-preview"
+        [hidden]="!isBrowserCameraOpen"
+        autoplay
+        playsinline
+        muted
+        aria-label="Vista previa de la cámara"
+      ></video>
+      <model-viewer
+        class="sofa-viewer"
+        src="assets/models/sofa.glb"
+        ios-src="assets/models/sofa.usdz"
+        alt="Sofá de dos plazas en color terracota"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        ar-scale="fixed"
+        camera-controls
+        touch-action="pan-y"
+        shadow-intensity="1"
+      >
+        <button
+          slot="ar-button"
+          class="ar-button"
+          (click)="closeCameraForAR()"
+        >
+          Ver sofá en mi espacio
+        </button>
+      </model-viewer>
+    </div>
+    @if (!isBrowserCameraOpen) {
+      <p class="ar-hint">
+        En un móvil compatible, toca el botón de AR del visor para colocarlo con
+        la cámara.
+      </p>
+    } @else {
+      <p class="ar-hint">
+        El sofá aparece sobre la cámara. Toca «Ver sofá en mi espacio» para
+        colocarlo con el seguimiento AR del móvil.
       </p>
     }
     <ion-button
@@ -54,7 +87,10 @@
         Cancelar
       </ion-button>
     } @else {
-      <p class="hint">Tus fotos se guardan en este dispositivo.</p>
+      <p class="hint">
+        Tus fotos se guardan en este dispositivo. Para probar el sofá, cierra la
+        cámara y toca «Ver sofá en mi espacio».
+      </p>
     }
   </main>
 </ion-content>

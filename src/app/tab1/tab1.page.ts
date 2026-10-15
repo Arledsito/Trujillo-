@@ -1,4 +1,5 @@
 import {
+  CUSTOM_ELEMENTS_SCHEMA,
   ChangeDetectorRef,
   Component,
   ElementRef,
@@ -20,11 +21,16 @@ import { addIcons } from 'ionicons';
 import { cameraOutline, imagesOutline } from 'ionicons/icons';
 import { PhotoGalleryService } from '../services/photo-gallery.service';
 
+if (typeof window !== 'undefined' && 'WebGLRenderingContext' in window) {
+  void import('@google/model-viewer');
+}
+
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
   imports: [IonButton, IonContent, IonHeader, IonIcon, IonTitle, IonToolbar],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class Tab1Page {
   @ViewChild('cameraPreview', { static: true })
@@ -139,6 +145,12 @@ export class Tab1Page {
 
   cancelBrowserCamera(): void {
     this.stopBrowserCamera();
+  }
+
+  closeCameraForAR(): void {
+    if (this.isBrowserCameraOpen) {
+      this.stopBrowserCamera();
+    }
   }
 
   private async startBrowserCamera(): Promise<void> {

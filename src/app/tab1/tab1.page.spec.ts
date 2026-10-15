@@ -15,4 +15,13 @@ describe('Tab1Page', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('keeps the sofa viewer visible while the camera is open', () => {
+    component.isBrowserCameraOpen = true;
+    fixture.detectChanges();
+
+    const viewer = fixture.nativeElement.querySelector('model-viewer');
+
+    expect(viewer).toBeTruthy();
+  });
 });
