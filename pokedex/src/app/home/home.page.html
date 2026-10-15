@@ -1,0 +1,248 @@
+<main class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Pokédex, inicio">
+      <span class="brand-mark" aria-hidden="true"><span></span></span>
+      <span>poké<span class="brand-light">dex</span></span>
+    </a>
+    <span class="topbar-label"><span class="live-dot"></span> ESCÁNER AR</span>
+    <a class="api-link" href="https://pokeapi.co/" target="_blank" rel="noopener noreferrer">
+      Datos de PokéAPI ↗
+    </a>
+  </header>
+
+  <section class="intro">
+    <div class="eyebrow"><span></span> TU AVENTURA EMPIEZA AQUÍ</div>
+    <h1>¿Quién se esconde<br />en esa <span>imagen?</span></h1>
+    <p>Apunta tu cámara, captura un Pokémon y descubre todo sobre él.</p>
+  </section>
+
+  <section class="workspace" aria-label="Escáner e información Pokémon">
+    <div class="scanner-column">
+      <article class="scanner-card">
+        <div class="card-heading">
+          <div>
+            <span class="section-kicker">01 — ESCÁNER</span>
+            <h2>Encuentra un Pokémon</h2>
+          </div>
+          @if (cameraActive) {
+            <span class="camera-status"><span></span> EN VIVO</span>
+          } @else {
+            <span class="camera-icon" aria-hidden="true">◉</span>
+          }
+        </div>
+
+        <div class="viewfinder" [class.is-live]="cameraActive" [class.has-photo]="!!photoPreview">
+          <video #cameraPreview class="camera-video" [class.visible]="cameraActive"
+            autoplay playsinline muted aria-label="Vista previa de la cámara"></video>
+          @if (!cameraActive && photoPreview) {
+            <img class="photo-preview" [src]="photoPreview" alt="Foto lista para analizar" />
+          }
+          @if (!cameraActive && !photoPreview) {
+            <div class="camera-placeholder">
+              <div class="placeholder-orbit">
+                <span class="placeholder-pokeball"><span></span></span>
+                <span class="orbit-dot orbit-dot-one"></span>
+                <span class="orbit-dot orbit-dot-two"></span>
+              </div>
+              <strong>Tu próximo encuentro<br />está a un clic</strong>
+              <span>Centra la imagen del Pokémon en el visor</span>
+            </div>
+          }
+          @if (cameraActive) {
+            <div class="scan-frame" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+              <div class="scan-line"></div>
+            </div>
+            <span class="viewfinder-label">ENCUADRA AL POKÉMON</span>
+          }
+          @if (isPhotoResult && pokemon) {
+            <div class="ar-result-tag" role="status" aria-live="polite">
+              <span class="ar-target" aria-hidden="true">◎</span>
+              <span class="ar-tag-copy">
+                <span>POKÉMON IDENTIFICADO</span>
+                <strong>{{ pokemon.name }}</strong>
+                <span>{{ formatPokemonId(pokemon.id) }} · {{ pokemon.types.join(' / ') }}</span>
+              </span>
+            </div>
+          }
+          @if (isLoading && isIdentifyingPhoto) {
+            <div class="analyzing-overlay">
+              <span class="analyzing-spinner"></span>
+              <strong>Buscando Pokémon…</strong>
+              <span>La IA está analizando la imagen</span>
+            </div>
+          }
+        </div>
+
+        <input #filePicker class="visually-hidden" type="file" accept="image/*"
+          aria-label="Seleccionar una foto de Pokémon"
+          capture="environment" (change)="onPhotoSelected($event)" />
+
+        <div class="scanner-actions">
+          @if (cameraActive) {
+            <button class="button button-primary" type="button" (click)="capturePhoto()">
+              <span class="shutter-icon" aria-hidden="true"></span> Tomar foto
+            </button>
+            <button class="button button-quiet" type="button" (click)="stopCamera()">
+              Cerrar cámara
+            </button>
+          } @else if (photoPreview) {
+            <button class="button button-primary" type="button" (click)="identifyPokemon()"
+              [disabled]="isLoading">
+              @if (isLoading) {
+                <span class="button-spinner" aria-hidden="true"></span> Analizando…
+              } @else {
+                <span aria-hidden="true">✳</span> Identificar Pokémon
+              }
+            </button>
+            <button class="button button-quiet" type="button" (click)="clearPhoto()">
+              Cambiar foto
+            </button>
+          } @else {
+            <button class="button button-primary" type="button" (click)="startCamera()">
+              <span aria-hidden="true">◎</span> Abrir cámara
+            </button>
+            <button class="button button-quiet" type="button" (click)="openFilePicker()">
+              <span aria-hidden="true">↑</span> Subir foto
+            </button>
+          }
+        </div>
+
+        @if (errorMessage) {
+          <div class="notice notice-error" role="alert">
+            <span aria-hidden="true">!</span><p>{{ errorMessage }}</p>
+          </div>
+        } @else if (infoMessage) {
+          <div class="notice notice-info" role="status">
+            <span aria-hidden="true">✳</span><p>{{ infoMessage }}</p>
+          </div>
+        }
+
+        <div class="privacy-note">
+          <span aria-hidden="true">⌑</span>
+          La foto se procesa en Gemini y no se guarda en esta app. Consulta las condiciones de Google.
+        </div>
+      </article>
+
+      <article class="key-card">
+        <div class="key-heading">
+          <span class="key-lock" aria-hidden="true">⌑</span>
+          <div>
+            <h3>Activa el reconocimiento con IA</h3>
+            <p>Necesitas una clave gratuita de Google AI Studio.</p>
+          </div>
+          @if (keySaved) {
+            <span class="key-ready"><span></span> LISTA</span>
+          }
+        </div>
+        <div class="key-input-row">
+          <input [(ngModel)]="apiKey" type="password" autocomplete="off"
+            aria-label="Clave de Google AI Studio" placeholder="Pega aquí tu clave de API" />
+          <button class="key-save" type="button" (click)="saveApiKey()">Guardar</button>
+        </div>
+        <div class="key-foot">
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">
+            Obtener una clave ↗
+          </a>
+          <span>Se guarda solo en esta pestaña.</span>
+          @if (keySaved) {
+            <button class="key-remove" type="button" (click)="clearApiKey()">Quitar clave</button>
+          }
+        </div>
+      </article>
+    </div>
+
+    <div class="result-column">
+      <article class="result-card" [class.result-found]="pokemon">
+        <div class="card-heading result-heading">
+          <div>
+            <span class="section-kicker">02 — POKÉDEX</span>
+            <h2>Tu descubrimiento</h2>
+          </div>
+          @if (pokemon) {
+            <span class="dex-number">{{ formatPokemonId(pokemon.id) }}</span>
+          }
+        </div>
+
+        @if (pokemon) {
+          <div class="pokemon-result">
+            <div class="pokemon-art">
+              @if (pokemon.image) {
+                <img [src]="pokemon.image" [alt]="'Ilustración de ' + pokemon.name" />
+              } @else {
+                <span class="art-fallback" aria-label="Sin ilustración">✳</span>
+              }
+              <span class="art-id">#{{ formatPokemonId(pokemon.id).slice(4) }}</span>
+            </div>
+            <div class="pokemon-title">
+              <span class="found-label"><span></span> POKÉMON IDENTIFICADO</span>
+              <h3>{{ pokemon.name }}</h3>
+              <span class="english-name">{{ pokemon.englishName }}</span>
+              <div class="type-list">
+                @for (type of pokemon.types; track type) {
+                  <span class="type-chip">{{ type }}</span>
+                }
+              </div>
+            </div>
+
+            @if (confidence !== null) {
+              <div class="confidence">
+                <span>Confianza orientativa</span><strong>{{ confidence }}%</strong>
+                <div class="confidence-track"><span [style.width.%]="confidence"></span></div>
+              </div>
+            }
+
+            <p class="pokemon-description">{{ pokemon.description }}</p>
+            <div class="measurements">
+              <div><span>ALTURA</span><strong>{{ pokemon.height }} <small>m</small></strong></div>
+              <div><span>PESO</span><strong>{{ pokemon.weight }} <small>kg</small></strong></div>
+              <div><span>HABILIDAD</span><strong class="ability">{{ pokemon.abilities[0] ?? '—' }}</strong></div>
+            </div>
+
+            <div class="stats">
+              <div class="stats-heading"><span>ESTADÍSTICAS BASE</span><span>VALOR</span></div>
+              @for (stat of pokemon.stats; track stat.name) {
+                <div class="stat-row">
+                  <span>{{ stat.name }}</span>
+                  <div class="stat-track">
+                    <span [style.width.%]="Math.min(stat.value / 255 * 100, 100)"></span>
+                  </div>
+                  <strong>{{ stat.value }}</strong>
+                </div>
+              }
+            </div>
+            <a class="source-link" [href]="'https://pokeapi.co/api/v2/pokemon/' + pokemon.id"
+              target="_blank" rel="noopener noreferrer">Datos oficiales de PokéAPI ↗</a>
+          </div>
+        } @else {
+          <div class="empty-result">
+            <div class="empty-sparkle sparkle-one">✳</div>
+            <div class="empty-pokeball"><span></span></div>
+            <div class="empty-sparkle sparkle-two">✦</div>
+            <strong>Tu hallazgo aparecerá aquí</strong>
+            <p>Identifica una imagen y revela la ficha, los tipos y las estadísticas del Pokémon.</p>
+            <div class="empty-divider"><span></span> O EXPLORA POR NOMBRE <span></span></div>
+          </div>
+        }
+
+        <form class="search-form" (ngSubmit)="searchPokemon()">
+          <label for="pokemon-search">Buscar en la Pokédex</label>
+          <div class="search-input-row">
+            <span aria-hidden="true">⌕</span>
+            <input id="pokemon-search" name="pokemonSearch" [(ngModel)]="searchQuery"
+              placeholder="Prueba «Pikachu» o «25»" [disabled]="isLoading" />
+            <button type="submit" [disabled]="isLoading || !searchQuery.trim()" aria-label="Buscar Pokémon">
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </form>
+      </article>
+      <p class="result-footnote"><span>✳</span> La identificación puede equivocarse. ¡Confirma tu descubrimiento!</p>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <span>ATRÁPALO TODO. DESCÚBRELOS TODOS.</span>
+    <span>HECHO PARA ENTRENADORES <span class="footer-pokeball" aria-hidden="true">◉</span></span>
+  </footer>
+</main>
