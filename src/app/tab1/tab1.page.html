@@ -1,17 +1,60 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
+    <ion-title>Cámara</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <main class="camera-page">
+    <video
+      #cameraPreview
+      class="camera-preview"
+      [hidden]="!isBrowserCameraOpen"
+      autoplay
+      playsinline
+      muted
+      aria-label="Vista previa de la cámara"
+    ></video>
+    <div class="camera-art" [hidden]="isBrowserCameraOpen" aria-hidden="true">
+      <ion-icon name="camera-outline"></ion-icon>
+    </div>
+    @if (!isBrowserCameraOpen) {
+      <p class="eyebrow">CAPTURA EL MOMENTO</p>
+      <h1>Tu cámara</h1>
+      <p class="description">
+        Toma una foto y la guardaremos en esta galería. En dispositivos móviles
+        también aparecerá en las fotos de tu dispositivo.
+      </p>
+    }
+    <ion-button
+      class="capture-button"
+      expand="block"
+      shape="round"
+      [disabled]="isCapturing"
+      (click)="isBrowserCameraOpen ? captureBrowserPhoto() : takePhoto()"
+    >
+      <ion-icon slot="start" name="camera-outline"></ion-icon>
+      {{
+        isCapturing
+          ? isBrowserCameraOpen
+            ? 'Guardando foto...'
+            : 'Abriendo cámara...'
+          : isBrowserCameraOpen
+            ? 'Tomar foto'
+            : 'Abrir cámara'
+      }}
+    </ion-button>
+    @if (isBrowserCameraOpen) {
+      <ion-button
+        class="cancel-button"
+        fill="clear"
+        [disabled]="isCapturing"
+        (click)="cancelBrowserCamera()"
+      >
+        Cancelar
+      </ion-button>
+    } @else {
+      <p class="hint">Tus fotos se guardan en este dispositivo.</p>
+    }
+  </main>
 </ion-content>

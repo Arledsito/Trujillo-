@@ -1,17 +1,55 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+    <ion-title>Mi galería</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <section class="gallery-page">
+    <header class="gallery-heading">
+      <div>
+        <p class="eyebrow">TUS RECUERDOS</p>
+        <h1>Mi galería</h1>
+      </div>
+      <span class="photo-count">{{ photos.length }}</span>
+    </header>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+    @if (isLoading) {
+      <p class="status-message">Cargando tus fotos...</p>
+    } @else if (loadError) {
+      <p class="status-message error-message">{{ loadError }}</p>
+    } @else if (photos.length) {
+      <div class="photo-grid">
+        @for (photo of photos; track photo.filepath; let index = $index) {
+          <figure class="photo-card">
+            <img [src]="photo.src" [alt]="'Foto ' + (index + 1)" />
+            <ion-button
+              class="delete-button"
+              fill="solid"
+              shape="round"
+              color="dark"
+              [disabled]="deletingFilepath === photo.filepath"
+              [attr.aria-label]="'Eliminar foto ' + (index + 1)"
+              (click)="confirmDelete(photo)"
+            >
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+            <figcaption>{{ photo.createdAt | date: 'mediumDate' }}</figcaption>
+          </figure>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-art" aria-hidden="true">
+          <ion-icon name="images-outline"></ion-icon>
+        </div>
+        <h2>Aún no hay fotos</h2>
+        <p>Las fotos que tomes aparecerán aquí.</p>
+        <ion-button routerLink="/tabs/tab1" shape="round">
+          <ion-icon slot="start" name="camera-outline"></ion-icon>
+          Abrir cámara
+        </ion-button>
+      </div>
+    }
+  </section>
 </ion-content>

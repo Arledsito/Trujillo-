@@ -1,0 +1,137 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.gallery-page {
+  min-height: 100%;
+  padding: 24px 18px 32px;
+}
+
+.gallery-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 2px 22px;
+
+  h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 750;
+  }
+}
+
+.eyebrow {
+  margin: 0 0 5px;
+  color: #7654c8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.photo-count {
+  display: grid;
+  min-width: 42px;
+  height: 42px;
+  padding: 0 10px;
+  place-items: center;
+  border-radius: 50%;
+  background: #eee9fb;
+  color: #6941c6;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.photo-card {
+  position: relative;
+  overflow: hidden;
+  margin: 0;
+  border-radius: 16px;
+  background: var(--ion-card-background, var(--ion-background-color));
+  box-shadow: 0 5px 18px rgb(35 23 60 / 9%);
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    background: #eeeaf4;
+  }
+
+  .delete-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 38px;
+    height: 38px;
+    margin: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+    --background: rgb(20 18 24 / 72%);
+    --background-activated: rgb(20 18 24 / 90%);
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  figcaption {
+    padding: 9px 11px 11px;
+    color: var(--ion-color-medium);
+    font-size: 12px;
+  }
+}
+
+.empty-state {
+  display: flex;
+  min-height: 55vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  h2 {
+    margin: 18px 0 5px;
+    font-size: 21px;
+  }
+
+  p,
+  .status-message {
+    color: var(--ion-color-medium);
+  }
+
+  ion-button {
+    margin-top: 12px;
+    --background: #6941c6;
+  }
+}
+
+.empty-art {
+  display: grid;
+  width: 104px;
+  height: 104px;
+  place-items: center;
+  border-radius: 32px;
+  background: #f0ebfb;
+  color: #7654c8;
+
+  ion-icon {
+    font-size: 48px;
+  }
+}
+
+.status-message {
+  padding-top: 40px;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+.error-message {
+  color: var(--ion-color-danger);
+}

@@ -1,0 +1,89 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.camera-page {
+  display: flex;
+  min-height: 100%;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 2vh, 24px) 20px;
+  text-align: center;
+}
+
+.camera-art {
+  display: grid;
+  width: 132px;
+  height: 132px;
+  margin-bottom: 28px;
+  place-items: center;
+  border-radius: 38px;
+  background: linear-gradient(145deg, #e9e7ff, #f5e9ff);
+  color: #6941c6;
+
+  ion-icon {
+    font-size: 64px;
+  }
+}
+
+.camera-preview {
+  display: block;
+  width: min(100%, 420px);
+  height: min(42vh, 420px);
+  min-height: 180px;
+  flex: 0 1 auto;
+  margin-bottom: 16px;
+  border-radius: 24px;
+  background: #17131f;
+  object-fit: cover;
+}
+
+.camera-preview[hidden],
+.camera-art[hidden] {
+  display: none;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #7654c8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(32px, 9vw, 42px);
+  font-weight: 750;
+}
+
+.description {
+  max-width: 310px;
+  margin: 14px 0 28px;
+  color: var(--ion-color-medium);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.capture-button {
+  width: min(100%, 310px);
+  height: 54px;
+  --background: #6941c6;
+  --background-activated: #5632a8;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.hint {
+  margin: 15px 0 0;
+  color: var(--ion-color-medium);
+  font-size: 13px;
+}
+
+.cancel-button {
+  margin-top: 6px;
+  --color: var(--ion-color-medium);
+}
